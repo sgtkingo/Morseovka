@@ -31,13 +31,15 @@ public class CharMap {
             charMapFromRaw.put(getCharByInt(i),values[i]);
             charMapFromMorse.put(values[i],getCharByInt(i));
         }
+        charMapFromRaw.put(' '," ");
+        charMapFromMorse.put(" ",' ');
     }
 
     public String getMorseByChar(Character c){
         if(charMapFromRaw.containsKey(c))
             return (String) charMapFromRaw.get(c);
         else
-            return "";
+            return null;
     }
 
     public boolean IsExistSomeMorse(String s){

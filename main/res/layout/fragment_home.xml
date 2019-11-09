@@ -8,7 +8,7 @@
     <EditText
         android:id="@+id/morseInput"
         android:layout_width="380dp"
-        android:layout_height="145dp"
+        android:layout_height="130dp"
         android:ems="10"
         android:gravity="start|top"
         android:inputType="textMultiLine"
@@ -23,7 +23,7 @@
         android:id="@+id/morseText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Morse text:"
+        android:text="Morse code:"
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/morseInput"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +48,7 @@
     <EditText
         android:id="@+id/rawInput"
         android:layout_width="380dp"
-        android:layout_height="121dp"
+        android:layout_height="130dp"
         android:layout_marginTop="56dp"
         android:ems="10"
         android:gravity="start|top"
@@ -59,7 +59,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/imagePlay"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginEnd="48dp"
@@ -71,26 +71,54 @@
 
     <Switch
         android:id="@+id/audioSwitch"
-        android:layout_width="173dp"
-        android:layout_height="39dp"
-        android:text="Audio"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:text="AUDIO"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
-        app:layout_constraintHorizontal_bias="0.216"
+        app:layout_constraintEnd_toStartOf="@+id/imagePlay"
+        app:layout_constraintHorizontal_bias="0.098"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/morseInput"
-        app:layout_constraintVertical_bias="0.082" />
+        app:layout_constraintVertical_bias="0.106" />
 
     <Switch
         android:id="@+id/flashSwitch"
-        android:layout_width="173dp"
-        android:layout_height="39dp"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="72dp"
-        android:text="Flash"
+        android:text="FLASH"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintEnd_toStartOf="@+id/imagePlay"
+        app:layout_constraintHorizontal_bias="0.153"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/audioSwitch"
-        app:layout_constraintVertical_bias="0.077" />
+        app:layout_constraintVertical_bias="0.075" />
+
+    <TextView
+        android:id="@+id/textFragmentRaw"
+        android:layout_width="52dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:text="-"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/imagePlay"
+        app:layout_constraintHorizontal_bias="0.852"
+        app:layout_constraintStart_toEndOf="@+id/audioSwitch"
+        app:layout_constraintTop_toBottomOf="@+id/morseInput" />
+
+    <TextView
+        android:id="@+id/textFragmentMorse"
+        android:layout_width="52dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="204dp"
+        android:text="-"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imagePlay"
+        app:layout_constraintHorizontal_bias="0.855"
+        app:layout_constraintStart_toEndOf="@+id/flashSwitch"
+        app:layout_constraintTop_toBottomOf="@+id/textFragmentRaw"
+        app:layout_constraintVertical_bias="0.722" />
 </androidx.constraintlayout.widget.ConstraintLayout>
