@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.morsecodetranslator.R;
+import com.example.morsecodetranslator.engine.FragmentMorse;
 import com.example.morsecodetranslator.engine.TranslateManager;
 
 
@@ -47,12 +48,13 @@ public class HomeFragment extends Fragment {
         rawInputText=root.findViewById(R.id.rawInput);
         fragmentRaw=root.findViewById(R.id.textFragmentRaw);
 
+
         morseInputText=root.findViewById(R.id.morseInput);
         fragmentMorse=root.findViewById(R.id.textFragmentMorse);
 
         PlayBtn=root.findViewById(R.id.imagePlay);
 
-        TM=new TranslateManager();
+        TM=new TranslateManager(this.getContext());
 
         rawInputText.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -75,16 +77,9 @@ public class HomeFragment extends Fragment {
         PlayBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Map M=TM.getPlayer().getPlayMap();
-                String mf="";
-                Character c=null;
-
-                for (Object key:M.keySet()) {
-                    c=(Character)key;
-                    mf=(String)M.get(c);
-
-                    fragmentRaw.setText(c);
-                    fragmentMorse.setText(mf);
+                for (FragmentMorse f : TM.getFragmentsList()) {
+                    fragmentRaw.setText(f.rawChar);
+                    fragmentMorse.setText(f.morseCode);
                     try {
                         Thread.sleep(250);
                     }

@@ -1,22 +1,28 @@
 package com.example.morsecodetranslator.engine;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 public class Translator {
-    final CharMap LocalCharMap=new CharMap();
+    final CharMap LocalCharMap;
     final Character US=(char)(0);
 
     public String resultRaw;
     public String resultMorse;
 
-    public Translator(){
+    public Translator(Context context){
         resultMorse="";
         resultRaw="";
+        LocalCharMap=new CharMap(context);
+    }
+
+    private void saveResults(String r, String m){
+        resultMorse=m;
+        resultRaw=r;
     }
 
     public String TranslateToMorse(String r){
-        resultRaw=r;
 
         String result="";
         String codeFragment="";
@@ -28,13 +34,12 @@ public class Translator {
                 result+=US; //US UnitSeparator
             }
         }
-        resultMorse=result;
+        saveResults(r,result);
+
         return result;
     }
 
     public String TranslateFromMorse(String m){
-        resultMorse=m;
-
         String result="";
         String codeFragment="";
         Character lastResult=null;
@@ -54,13 +59,9 @@ public class Translator {
             if(lastResult!=null){
                 result+=lastResult;
                 i=index;
-                /*Log.d("info",result);
-                Log.d("info",lastResult.toString());
-                Log.d("info",Integer.toString(index));
-                Log.d("info",Integer.toString(i));*/
             }
         }
-        resultRaw=result;
+        saveResults(result,m);
         return result;
     }
 }
