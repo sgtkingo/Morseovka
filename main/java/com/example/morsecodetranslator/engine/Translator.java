@@ -10,11 +10,22 @@ public class Translator {
 
     public String resultRaw;
     public String resultMorse;
+    public Context getContext;
 
     public Translator(Context context){
         resultMorse="";
         resultRaw="";
         LocalCharMap=new CharMap(context);
+        getContext=context;
+    }
+
+    public String getSpace(){
+        return (US+" ");
+    }
+
+    public void clearBuffer(){
+        resultRaw="";
+        resultMorse="";
     }
 
     private void saveResults(String r, String m){

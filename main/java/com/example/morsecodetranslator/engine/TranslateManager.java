@@ -34,4 +34,17 @@ public class TranslateManager {
     }
     public Fragmenter getFragmenter(){ return F; }
 
+    public void clearTranslator(){
+        T.clearBuffer();
+    }
+
+    public void playSound(boolean mode){
+        if(mode)P.playSoundDot();
+        else P.playSoundLine();
+    }
+
+    public void playFragment(FragmentMorse f){
+        P.playFragment(f);
+    }
+
 }

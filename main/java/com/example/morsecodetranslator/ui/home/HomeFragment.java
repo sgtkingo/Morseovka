@@ -1,6 +1,7 @@
 package com.example.morsecodetranslator.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -8,13 +9,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.TextView;
-import java.util.Map;
+
+
+/*import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;*/
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.morsecodetranslator.MainActivity;
 import com.example.morsecodetranslator.R;
 import com.example.morsecodetranslator.engine.FragmentMorse;
 import com.example.morsecodetranslator.engine.TranslateManager;
@@ -29,8 +41,14 @@ public class HomeFragment extends Fragment {
     private TextView fragmentMorse;
 
     private ImageButton PlayBtn;
+    private Switch swAudio;
+    private Switch swFlash;
 
-    private TranslateManager TM;
+    public static TranslateManager TM;
+    private View primalRoot;
+
+    private static final int CAMERA_REQUEST = 001;
+    boolean hasCameraFlash = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -45,14 +63,24 @@ public class HomeFragment extends Fragment {
             }
         });
         textView.setText("Morsecode Translator ");*/
+        primalRoot=root;
+
+        /*ActivityCompat.requestPermissions(MainActivity.class,
+                new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
+
+        hasCameraFlash = getPackageManager().
+                hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);*/
+
         rawInputText=root.findViewById(R.id.rawInput);
         fragmentRaw=root.findViewById(R.id.textFragmentRaw);
-
 
         morseInputText=root.findViewById(R.id.morseInput);
         fragmentMorse=root.findViewById(R.id.textFragmentMorse);
 
         PlayBtn=root.findViewById(R.id.imagePlay);
+        swAudio=root.findViewById(R.id.audioSwitch);
+        swFlash=root.findViewById(R.id.flashSwitch);
+        swAudio.setChecked(true);
 
         TM=new TranslateManager(this.getContext());
 
@@ -77,14 +105,19 @@ public class HomeFragment extends Fragment {
         PlayBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                for (FragmentMorse f : TM.getFragmentsList()) {
-                    fragmentRaw.setText(f.rawChar);
-                    fragmentMorse.setText(f.morseCode);
-                    try {
-                        Thread.sleep(250);
-                    }
-                    catch (Exception e){
-                        e.printStackTrace();
+                if(event.getAction()==MotionEvent.ACTION_DOWN){
+                    for (FragmentMorse f : TM.getFragmentsList()) {
+                        fragmentRaw.setText(f.rawChar.toString());
+                        fragmentMorse.setText(f.morseCode);
+
+                        if(swAudio.isChecked()) TM.playFragment(f);
+                        try {
+                            primalRoot.invalidate();
+                            Thread.sleep(250);
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 }
                 return false;
@@ -101,5 +134,41 @@ public class HomeFragment extends Fragment {
         if(textSize  < 20)textSize=20;
         ET.setTextSize(textSize);
     }
+
+
+    /*private void flashLightOn() {
+        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+
+        try {
+            String cameraId = cameraManager.getCameraIdList()[0];
+            cameraManager.setTorchMode(cameraId, true);
+        } catch (CameraAccessException e) {
+        }
+    }
+
+    private void flashLightOff() {
+        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        try {
+            String cameraId = cameraManager.getCameraIdList()[0];
+            cameraManager.setTorchMode(cameraId, false);
+        } catch (CameraAccessException e) {
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    hasCameraFlash = getPackageManager().
+                            hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+                } else {
+                    btnFlashLight.setEnabled(false);
+                    btnBlinkFlashLight.setEnabled(false);
+                    Toast.makeText(MainActivity.this, "Permission Denied for the Camera", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }*/
 
 }
