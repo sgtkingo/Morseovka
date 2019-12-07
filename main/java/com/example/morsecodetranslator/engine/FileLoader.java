@@ -4,13 +4,46 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
 public class FileLoader {
-    private static String LoadFile(Context context, String fn){
+    public static boolean SaveFileToAsset(Context context,String fn,String data){
+        try {
+            FileOutputStream fos = context.openFileOutput(fn, Context.MODE_PRIVATE);
+            fos.write(data.getBytes());
+            fos.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public static String LoadFileAny(Context context, String fp){
+        String result="";
+
+        try {
+            InputStream is = context.openFileInput(fp);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while((line = reader.readLine())!=null){
+                result += line;
+            }
+            reader.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            return result;
+        }
+    }
+    public static String LoadFileFromAsset(Context context, String fn){
         String result="";
 
         try {
@@ -62,10 +95,10 @@ public class FileLoader {
     }
 
     public static Map<Character, String> GetCharMapFromFileCS(Context context, String fn){
-        return ParseFileCS(LoadFile(context,fn));
+        return ParseFileCS(LoadFileFromAsset(context,fn));
     }
 
     public static Map<String, Character> GetCharMapFromFileSC(Context context, String fn){
-        return ParseFileSC(LoadFile(context,fn));
+        return ParseFileSC(LoadFileFromAsset(context,fn));
     }
 }

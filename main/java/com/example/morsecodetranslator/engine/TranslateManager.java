@@ -9,6 +9,7 @@ public class TranslateManager {
     private Translator T;
     private Player P;
     private Fragmenter F;
+    private FileTranslater FT;
     private Context C;
 
     public TranslateManager(Context context){
@@ -16,6 +17,7 @@ public class TranslateManager {
         T=new Translator(C);
         P=new Player(T);
         F=new Fragmenter(T);
+        FT=new FileTranslater(C,T);
     }
 
     public String TranslateRaw(String raw){
@@ -33,6 +35,7 @@ public class TranslateManager {
         return P;
     }
     public Fragmenter getFragmenter(){ return F; }
+    public FileTranslater getFileTranslator(){ return FT; }
 
     public void clearTranslator(){
         T.clearBuffer();
@@ -45,6 +48,10 @@ public class TranslateManager {
 
     public void playFragment(FragmentMorse f){
         P.playFragment(f);
+    }
+
+    public boolean translateFile(String in, String out){
+        return FT.TranslateFile(in,out);
     }
 
 }
