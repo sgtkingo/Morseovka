@@ -41,6 +41,11 @@ public class DashboardFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
         primalRoot=root;
 
+        if(!HomeFragment.swAudio.isChecked())
+            Toast.makeText(getContext(), "Audio is OFF...", Toast.LENGTH_SHORT).show();
+        if(!HomeFragment.swFlash.isChecked())
+            Toast.makeText(getContext(), "Flash is OFF...", Toast.LENGTH_SHORT).show();
+
         createContent();
         return root;
 
@@ -61,13 +66,17 @@ public class DashboardFragment extends Fragment {
 
         HomeFragment.TM.clearTranslator();
 
+        //use SWITCH AUDIO/FLASH from Home Fragment!!
         btnDot.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction()==MotionEvent.ACTION_DOWN){
                     txtMorse.setText(txtMorse.getText() + ".");
                     txtRaw.setText(HomeFragment.TM.TranslateMorse(txtMorse.getText().toString()));
-                    HomeFragment.TM.playSound(true);
+                    if(HomeFragment.swAudio.isChecked())
+                         HomeFragment.TM.playSound(true);
+                    if(HomeFragment.swFlash.isChecked() && HomeFragment.hasCameraFlash)
+                        HomeFragment.TM.flashLight(true);
                     checkTextLenght();
                 }
                 return false;
@@ -80,7 +89,10 @@ public class DashboardFragment extends Fragment {
                 if(event.getAction()==MotionEvent.ACTION_DOWN) {
                     txtMorse.setText(txtMorse.getText() + "-");
                     txtRaw.setText(HomeFragment.TM.TranslateMorse(txtMorse.getText().toString()));
-                    HomeFragment.TM.playSound(false);
+                    if(HomeFragment.swAudio.isChecked())
+                        HomeFragment.TM.playSound(false);
+                    if(HomeFragment.swFlash.isChecked())
+                        HomeFragment.TM.flashLight(false);
                     checkTextLenght();
                 }
                 return false;

@@ -1,30 +1,46 @@
 package com.example.morsecodetranslator.engine;
 
 import android.content.Context;
+import android.content.UriMatcher;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 public class FileLoader {
-    public static boolean SaveFileToAsset(Context context,String fn,String data){
+
+    public static String LoadFile(Uri uri){
+        String result="";
+        File file=null;
         try {
-            FileOutputStream fos = context.openFileOutput(fn, Context.MODE_PRIVATE);
-            fos.write(data.getBytes());
-            fos.close();
+            file=new File(uri.getPath());
+            FileInputStream fis=new FileInputStream(file);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+            String line;
+            while((line = reader.readLine())!=null){
+                result += line;
+            }
+            reader.close();
         }
         catch (Exception e){
             e.printStackTrace();
-            return false;
+            return null;
         }
-        return true;
+        finally {
+            return result;
+        }
     }
 
-    public static String LoadFileAny(Context context, String fp){
+    public static String LoadFile(Context context, String fp){
         String result="";
 
         try {
@@ -38,6 +54,7 @@ public class FileLoader {
         }
         catch (Exception e){
             e.printStackTrace();
+            return null;
         }
         finally {
             return result;
@@ -57,6 +74,7 @@ public class FileLoader {
         }
         catch (Exception e){
             e.printStackTrace();
+            return null;
         }
         finally {
             return result;
@@ -64,7 +82,7 @@ public class FileLoader {
     }
 
     private static Map<Character, String> ParseFileCS(String data){
-        if(data=="")return null;
+        if(data=="" || data==null)return null;
         Log.d("debug",data);
 
         Map<Character, String> result=new HashMap<>();
@@ -79,7 +97,7 @@ public class FileLoader {
         return result;
     }
     private static Map<String, Character> ParseFileSC(String data){
-        if(data=="")return null;
+        if(data=="" || data==null)return null;
         Log.d("debug",data);
 
         Map<String, Character> result=new HashMap<>();

@@ -1,5 +1,11 @@
 package com.example.morsecodetranslator.ui.home;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -11,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /*import android.Manifest;
@@ -23,6 +30,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;*/
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -41,14 +49,14 @@ public class HomeFragment extends Fragment {
     private TextView fragmentMorse;
 
     private ImageButton PlayBtn;
-    private Switch swAudio;
-    private Switch swFlash;
+    public static Switch swAudio;
+    public static Switch swFlash;
 
     public static TranslateManager TM;
     private View primalRoot;
 
-    private static final int CAMERA_REQUEST = 101;
-    boolean hasCameraFlash = false;
+    private final int CAMERA_REQUEST = 101;
+    public static boolean hasCameraFlash = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -65,12 +73,23 @@ public class HomeFragment extends Fragment {
         textView.setText("Morsecode Translator ");*/
         primalRoot=root;
 
-        /*ActivityCompat.requestPermissions(MainActivity.class,
-                new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
+        //Camera permission request
+        try {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
+            hasCameraFlash = getContext().getPackageManager().
+                    hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+            if(!hasCameraFlash)
+            {
+                swFlash.setEnabled(false);
+                Toast.makeText(getContext(),"No flash on camera detected!",Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
-        hasCameraFlash = getPackageManager().
-                hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);*/
-
+        //Modules setting
         rawInputText=root.findViewById(R.id.rawInput);
         fragmentRaw=root.findViewById(R.id.textFragmentRaw);
 
@@ -111,9 +130,10 @@ public class HomeFragment extends Fragment {
                         fragmentMorse.setText(f.morseCode);
 
                         if(swAudio.isChecked()) TM.playFragment(f);
+                        if(swFlash.isChecked() && hasCameraFlash) TM.flashFragment(f);
                         try {
                             primalRoot.invalidate();
-                            Thread.sleep(250);
+                            Thread.sleep(150);
                         }
                         catch (Exception e){
                             e.printStackTrace();
@@ -137,38 +157,45 @@ public class HomeFragment extends Fragment {
 
 
     /*private void flashLightOn() {
-        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        CameraManager cameraManager = (CameraManager) getContext().getSystemService(Context.CAMERA_SERVICE);
 
         try {
             String cameraId = cameraManager.getCameraIdList()[0];
             cameraManager.setTorchMode(cameraId, true);
         } catch (CameraAccessException e) {
+            e.printStackTrace();
         }
     }
 
     private void flashLightOff() {
-        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        CameraManager cameraManager = (CameraManager) getContext().getSystemService(Context.CAMERA_SERVICE);
         try {
             String cameraId = cameraManager.getCameraIdList()[0];
             cameraManager.setTorchMode(cameraId, false);
         } catch (CameraAccessException e) {
+            e.printStackTrace();
         }
-    }
+    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case CAMERA_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    hasCameraFlash = getPackageManager().
+                    hasCameraFlash = getContext().getPackageManager().
                             hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+                    if(!hasCameraFlash)
+                    {
+                        swFlash.setEnabled(false);
+                        Toast.makeText(getContext(),"No flash on camera detected!",Toast.LENGTH_SHORT).show();
+                    }
+                    else swFlash.setEnabled(true);
                 } else {
-                    btnFlashLight.setEnabled(false);
-                    btnBlinkFlashLight.setEnabled(false);
-                    Toast.makeText(MainActivity.this, "Permission Denied for the Camera", Toast.LENGTH_SHORT).show();
+                    swFlash.setEnabled(false);
+                    Toast.makeText(getContext(), "Permission Denied for the Camera", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
-    }*/
+    }
 
 }

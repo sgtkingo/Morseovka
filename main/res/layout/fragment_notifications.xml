@@ -72,5 +72,19 @@
             android:layout_height="wrap_content"
             android:scrollbarSize="16dp" />
 
+        <TextView
+            android:id="@+id/txtOL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Output:"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/txtOutView"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

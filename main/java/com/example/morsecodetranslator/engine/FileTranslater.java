@@ -1,6 +1,7 @@
 package com.example.morsecodetranslator.engine;
 
 import android.content.Context;
+import android.net.Uri;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
@@ -26,14 +27,15 @@ public class FileTranslater {
 
     public void Progress(int progress){
         if(progressBar==null)return;
+
         proggressStatus+=progress;
         progressBar.setProgress(proggressStatus);
     }
 
-    public boolean TranslateFile(String inFilePath, String outFileName){
-        //String data=FileLoader.LoadFileAny(context,inFilePath);
-        String data=FileLoader.LoadFileFromAsset(context,"test.txt");
-        if(data=="")return false;
+    public boolean TranslateFile(Uri inFilePath, String outFileName){
+        String data=FileLoader.LoadFile(inFilePath);
+        //String data=FileLoader.LoadFileFromAsset(context,"test.txt");
+        if(data=="" || data==null)return false;
 
         String[] parseData=data.split("\n");
 
@@ -42,10 +44,9 @@ public class FileTranslater {
         for(String line:parseData){
             resultData+=T.TranslateToMorse(line);
             resultData+="\n";
-            Progress(parseData.length);
+            Progress(100/(parseData.length+1));
         }
 
-        FileLoader.SaveFileToAsset(context,outFileName,resultData);
-        return true;
+        return FileSaver.SaveFile(context,outFileName,resultData);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.morsecodetranslator.engine;
 
 import android.content.Context;
+import android.net.Uri;
 import android.widget.TextView;
 
 import java.util.List;
@@ -10,6 +11,7 @@ public class TranslateManager {
     private Player P;
     private Fragmenter F;
     private FileTranslater FT;
+    private Flasher FL;
     private Context C;
 
     public TranslateManager(Context context){
@@ -18,6 +20,7 @@ public class TranslateManager {
         P=new Player(T);
         F=new Fragmenter(T);
         FT=new FileTranslater(C,T);
+        FL=new Flasher(C);
     }
 
     public String TranslateRaw(String raw){
@@ -46,12 +49,17 @@ public class TranslateManager {
         else P.playSoundLine();
     }
 
+    public void flashLight(boolean mode){
+        FL.Flash(mode);
+    }
+
     public void playFragment(FragmentMorse f){
         P.playFragment(f);
     }
+    public void flashFragment(FragmentMorse f){FL.flashFragment(f);}
 
-    public boolean translateFile(String in, String out){
-        return FT.TranslateFile(in,out);
+    public boolean translateFile(Uri inp, String outn){
+        return FT.TranslateFile(inp,outn);
     }
 
 }
