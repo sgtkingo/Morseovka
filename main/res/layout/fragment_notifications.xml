@@ -82,15 +82,35 @@
         <EditText
             android:id="@+id/txtOutView"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="73dp"
             android:ems="10"
             android:inputType="textPersonName" />
 
-        <Switch
-            android:id="@+id/fileType"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="FileType" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgFrom"
+                android:layout_width="wrap_content"
+                android:layout_height="106dp"
+                app:srcCompat="@drawable/ic_fileraw" />
+
+            <ImageView
+                android:id="@+id/imgProcessDirection"
+                android:layout_width="201dp"
+                android:layout_height="109dp"
+                android:layout_weight="1"
+                app:srcCompat="@android:drawable/ic_media_ff" />
+
+            <ImageView
+                android:id="@+id/imgTo"
+                android:layout_width="138dp"
+                android:layout_height="108dp"
+                android:layout_weight="1"
+                app:srcCompat="@mipmap/ic_icon_morse_foreground" />
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

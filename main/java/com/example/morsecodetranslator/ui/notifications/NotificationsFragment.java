@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -40,6 +43,9 @@ public class NotificationsFragment extends Fragment {
     private NotificationsViewModel notificationsViewModel;
     private View primalRoot;
     private final int RESULT_OK=-1;
+    private final int RAWFILE=R.drawable.ic_fileraw;
+    private final int MORSEFILE=R.mipmap.ic_icon_morse_foreground;
+
     private TranslateManager TM;
 
     private Uri inFileUri=null;
@@ -59,7 +65,9 @@ public class NotificationsFragment extends Fragment {
     EditText txtOutFile;
     Button btnProcessFile;
     ProgressBar progressBar;
-    Switch fileSwitch;
+    ImageView imgFrom;
+    ImageView imgTo;
+    ImageView imgDataDirection;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -97,7 +105,9 @@ public class NotificationsFragment extends Fragment {
          txtOutView=primalRoot.findViewById(R.id.txtOutView);
          btnProcessFile=primalRoot.findViewById(R.id.btnProcess);
          progressBar=primalRoot.findViewById(R.id.progressBar);
-         fileSwitch=primalRoot.findViewById(R.id.fileType);
+         imgFrom=primalRoot.findViewById(R.id.imgFrom);
+         imgTo=primalRoot.findViewById(R.id.imgTo);
+         imgDataDirection=primalRoot.findViewById(R.id.imgProcessDirection);
 
         TM=HomeFragment.TM;
         TM.clearTranslator();
@@ -121,6 +131,7 @@ public class NotificationsFragment extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction()==MotionEvent.ACTION_DOWN){
                 if(inFileUri==null)return false;
+                imgDataDirection.setColorFilter(Color.TRANSPARENT);
 
                 String outFileName=txtOutFile.getText().toString();
                 if(fileType)outFileUri=createOutFileUri(outFileName+".txt",inFileUri);
@@ -130,11 +141,16 @@ public class NotificationsFragment extends Fragment {
                     Toast.makeText(getContext(), "Please, enter valid file name...", Toast.LENGTH_SHORT).show();
                     return false;
                 }
+
                 if(!TM.translateFile(inFileUri,outFileUri,fileType)){
+                    imgDataDirection.setColorFilter(Color.RED);
                     Toast.makeText(getContext(),"File transcrypt errror...",Toast.LENGTH_SHORT).show();
                     return false;
                 }
-                else Toast.makeText(getContext(),"File transcrypt success!",Toast.LENGTH_SHORT).show();
+                else {
+                    imgDataDirection.setColorFilter(Color.GREEN);
+                    Toast.makeText(getContext(),"File transcrypt success!",Toast.LENGTH_SHORT).show();
+                }
                 udpadeTxtOut(FileTranslater.globalResultData);
                 return true;
                 }
@@ -164,12 +180,18 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void fileSwichMethod(boolean type){
-        fileSwitch.setChecked(type);
+        imgDataDirection.setColorFilter(Color.TRANSPARENT);
         if(type){
             Toast.makeText(getContext(),"Detect INPUT .mrc (Morse code) file!",Toast.LENGTH_SHORT).show();
+            imgTo.setImageResource(RAWFILE);
+            imgFrom.setImageResource(MORSEFILE);
         }
-        else Toast.makeText(getContext(),"Detect INPUT text(raw) file!",Toast.LENGTH_SHORT).show();
-    }
+        else {
+            Toast.makeText(getContext(),"Detect INPUT text(raw) file!",Toast.LENGTH_SHORT).show();
+            imgTo.setImageResource(MORSEFILE);
+            imgFrom.setImageResource(RAWFILE);
+        }
+}
 
     private void udpadeTxtOut(String data){
         final int splitterValue=50;

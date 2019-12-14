@@ -34,6 +34,7 @@ public class FileTranslater {
     }
 
     public boolean TranslateFile(Uri inFileUri, Uri outFileUri, boolean fileType){
+        globalResultData="";
         String data=FileLoader.LoadFile(inFileUri);
         //String data=FileLoader.LoadFileFromAsset(context,"test.txt");
         if(data=="" || data==null)return false;
