@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
     public static TranslateManager TM;
     private View primalRoot;
 
-    private final int CAMERA_REQUEST = 101;
+    private final int CAMERA_REQUEST = 901;
     public static boolean hasCameraFlash = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,

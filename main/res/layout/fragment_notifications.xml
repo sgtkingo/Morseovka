@@ -82,9 +82,15 @@
         <EditText
             android:id="@+id/txtOutView"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="120dp"
             android:ems="10"
             android:inputType="textPersonName" />
+
+        <Switch
+            android:id="@+id/fileType"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="FileType" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -58,8 +58,8 @@ public class TranslateManager {
     }
     public void flashFragment(FragmentMorse f){FL.flashFragment(f);}
 
-    public boolean translateFile(Uri inp, String outn){
-        return FT.TranslateFile(inp,outn);
+    public boolean translateFile(Uri inp, Uri outp, boolean type){
+        return FT.TranslateFile(inp,outp,type);
     }
 
 }

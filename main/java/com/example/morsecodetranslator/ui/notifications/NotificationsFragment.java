@@ -1,6 +1,9 @@
 package com.example.morsecodetranslator.ui.notifications;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,16 +14,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.morsecodetranslator.R;
+import com.example.morsecodetranslator.engine.FileTranslater;
 import com.example.morsecodetranslator.engine.TranslateManager;
 import com.example.morsecodetranslator.ui.home.HomeFragment;
 
@@ -37,9 +43,15 @@ public class NotificationsFragment extends Fragment {
     private TranslateManager TM;
 
     private Uri inFileUri=null;
-    private String selecFilePath="";
-    private String selecFileName="";
-    private String outFileName="";
+    private Uri outFileUri=null;
+
+    private boolean fileType=false;
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 900;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     TextView txtSelectFile;
     EditText txtOutView;
@@ -47,6 +59,7 @@ public class NotificationsFragment extends Fragment {
     EditText txtOutFile;
     Button btnProcessFile;
     ProgressBar progressBar;
+    Switch fileSwitch;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -56,6 +69,8 @@ public class NotificationsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
 
         primalRoot=root;
+        //Verify SD file read permision
+        verifyStoragePermissions(getActivity());
         CreateContent();
 
         return root;
@@ -64,12 +79,12 @@ public class NotificationsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
-            case 100:
+            case 200:
                 if(resultCode==RESULT_OK){
-                    selecFilePath=data.getData().getPath();
-                    selecFileName=data.getData().toString();
-                    txtSelectFile.setText(selecFileName);
                     inFileUri=Uri.parse(data.getData().getPath());
+                    txtSelectFile.setText(inFileUri.toString());
+                    fileType=inFileUri.toString().contains(".mrc");
+                    fileSwichMethod(fileType);
                 }
                 break;
         }
@@ -82,6 +97,7 @@ public class NotificationsFragment extends Fragment {
          txtOutView=primalRoot.findViewById(R.id.txtOutView);
          btnProcessFile=primalRoot.findViewById(R.id.btnProcess);
          progressBar=primalRoot.findViewById(R.id.progressBar);
+         fileSwitch=primalRoot.findViewById(R.id.fileType);
 
         TM=HomeFragment.TM;
         TM.clearTranslator();
@@ -90,28 +106,39 @@ public class NotificationsFragment extends Fragment {
         btnSelectFile.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Intent myFileIntent=new Intent(Intent.ACTION_GET_CONTENT);
-                myFileIntent.setType("*/*");
-                startActivityForResult(myFileIntent,100);
-                return true;
+                if(event.getAction()==MotionEvent.ACTION_DOWN){
+                    Intent myFileIntent=new Intent(Intent.ACTION_GET_CONTENT);
+                    myFileIntent.setType("*/*");
+                    startActivityForResult(myFileIntent,200);
+                    return true;
+                }
+                return false;
             }
         });
 
         btnProcessFile.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                outFileName=txtOutFile.getText().toString();
-                if(outFileName.compareTo("")==0 || selecFilePath.compareTo("")==0){
+                if(event.getAction()==MotionEvent.ACTION_DOWN){
+                if(inFileUri==null)return false;
+
+                String outFileName=txtOutFile.getText().toString();
+                if(fileType)outFileUri=createOutFileUri(outFileName+".txt",inFileUri);
+                else outFileUri=createOutFileUri(outFileName+".mrc",inFileUri);
+
+                if(outFileUri==null || inFileUri==null){
                     Toast.makeText(getContext(), "Please, enter valid file name...", Toast.LENGTH_SHORT).show();
                     return false;
                 }
-                if(!TM.translateFile(inFileUri,outFileName+".mrc")){
+                if(!TM.translateFile(inFileUri,outFileUri,fileType)){
                     Toast.makeText(getContext(),"File transcrypt errror...",Toast.LENGTH_SHORT).show();
                     return false;
                 }
                 else Toast.makeText(getContext(),"File transcrypt success!",Toast.LENGTH_SHORT).show();
-                udpadeTxtOut(TM.getTranslator().resultMorse);
+                udpadeTxtOut(FileTranslater.globalResultData);
                 return true;
+                }
+                return false;
             }
         });
 
@@ -124,6 +151,26 @@ public class NotificationsFragment extends Fragment {
         });
     }
 
+    private Uri createOutFileUri(String fn, Uri ifu){
+        fn.trim();
+        if(fn.compareTo(".txt")==0 || fn.compareTo(".mrc")==0)return null;
+        String path=ifu.toString();
+        int cutIndex=path.lastIndexOf("/");
+        String clearPath=path.substring(0,cutIndex);
+        clearPath+="/"+fn;
+
+        Uri uri=Uri.parse(clearPath);
+        return uri;
+    }
+
+    private void fileSwichMethod(boolean type){
+        fileSwitch.setChecked(type);
+        if(type){
+            Toast.makeText(getContext(),"Detect INPUT .mrc (Morse code) file!",Toast.LENGTH_SHORT).show();
+        }
+        else Toast.makeText(getContext(),"Detect INPUT text(raw) file!",Toast.LENGTH_SHORT).show();
+    }
+
     private void udpadeTxtOut(String data){
         final int splitterValue=50;
         String result="";
@@ -133,5 +180,31 @@ public class NotificationsFragment extends Fragment {
             result+="\n";
         }
         txtOutView.setText(result);
+    }
+
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have read permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+
+        // Check if we have write permission
+        permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
     }
 }
