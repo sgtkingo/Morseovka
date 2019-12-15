@@ -1,13 +1,8 @@
 package com.example.morsecodetranslator.ui.home;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,15 +14,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-/*import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;*/
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -81,8 +67,11 @@ public class HomeFragment extends Fragment {
                     hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
             if(!hasCameraFlash)
             {
-                swFlash.setEnabled(false);
-                Toast.makeText(getContext(),"No flash on camera detected!",Toast.LENGTH_SHORT).show();
+                swFlash.setChecked(false);
+            }
+            if(!hasCameraFlash)
+            {
+                swFlash.setChecked(true);
             }
         }
         catch (Exception e){
@@ -130,7 +119,7 @@ public class HomeFragment extends Fragment {
                         fragmentMorse.setText(f.morseCode);
 
                         if(swAudio.isChecked()) TM.playFragment(f);
-                        if(swFlash.isChecked() && hasCameraFlash) TM.flashFragment(f);
+                        if(swFlash.isChecked()) TM.flashFragment(f);
                         try {
                             primalRoot.invalidate();
                             Thread.sleep(150);
@@ -138,6 +127,19 @@ public class HomeFragment extends Fragment {
                         catch (Exception e){
                             e.printStackTrace();
                         }
+                    }
+                }
+                return false;
+            }
+        });
+
+        swFlash.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction()==MotionEvent.ACTION_DOWN){
+                    if(!hasCameraFlash){
+                        swFlash.setChecked(!hasCameraFlash);
+                        Toast.makeText(getContext(),"No flash on camera detected!",Toast.LENGTH_SHORT).show();
                     }
                 }
                 return false;
@@ -186,10 +188,9 @@ public class HomeFragment extends Fragment {
                             hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
                     if(!hasCameraFlash)
                     {
-                        swFlash.setEnabled(false);
-                        Toast.makeText(getContext(),"No flash on camera detected!",Toast.LENGTH_SHORT).show();
+                        swFlash.setChecked(false);
                     }
-                    else swFlash.setEnabled(true);
+                    else swFlash.setChecked(true);
                 } else {
                     swFlash.setEnabled(false);
                     Toast.makeText(getContext(), "Permission Denied for the Camera", Toast.LENGTH_SHORT).show();

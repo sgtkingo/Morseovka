@@ -24,13 +24,9 @@ public class Flasher {
 
         try {
             flashLightOn();
-            try {
-                Thread.sleep(time);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
+            devicePause(time);
             flashLightOff();
+            devicePause(200);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -69,6 +65,15 @@ public class Flasher {
             String cameraId = cameraManager.getCameraIdList()[0];
             cameraManager.setTorchMode(cameraId, false);
         } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void devicePause(int t){
+        try {
+            Thread.sleep(t);
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
     }

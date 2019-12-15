@@ -75,7 +75,7 @@ public class DashboardFragment extends Fragment {
                     txtRaw.setText(HomeFragment.TM.TranslateMorse(txtMorse.getText().toString()));
                     if(HomeFragment.swAudio.isChecked())
                          HomeFragment.TM.playSound(true);
-                    if(HomeFragment.swFlash.isChecked() && HomeFragment.hasCameraFlash)
+                    if(HomeFragment.swFlash.isChecked())
                         HomeFragment.TM.flashLight(true);
                     checkTextLenght();
                 }
